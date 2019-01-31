@@ -34,13 +34,15 @@ Note : i won't add this ansible part to the repository, for multiple reasons (th
 
 ## configure local nameservers and networking ##
 
-We setup two local nameservers to provide host name resolution for our sandbox zone "p13.p.s18m2.com" using :
+We setup two local nameservers to provide host name resolution for our sandbox zone "p13.p.s18m2.com", extra vlan configuration is also applied using this playbook, so our raspberry pi hosts can sit on various networks the way we like :
 
 ```
   ansible-playbook -i inventory/bootstrap/ _bootstrap.yml
 ```
 
 ## install docker-ce ##
+
+Basic docker-ce setup on amd64+armhf(armv7 only for now, not using aarch64 here yet), plus ssl/tls certificates setup related to our local docker registry (also running on arm devices) :
 
 ```
   cd ansible/
