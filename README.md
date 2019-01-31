@@ -336,7 +336,7 @@ optional : if you want to allow kubernetes master node to run tasks
   # basic :
   kubectl run appname --image=myimage:tag
 
-  # useful when in 'creating' status:
+  # useful when in 'creating' status (while no logs are available yet) :
   kubectl describe pods -n ingress-nginx
 
 ```
