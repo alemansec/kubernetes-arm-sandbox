@@ -15,5 +15,12 @@ spec:
       containers:
       - name: my-nginx
         image: nginx:stable
+        resources:
+          requests:
+            memory: "4Mi"
+            cpu: "125m"
+          limits:
+            memory: "32Mi"
+            cpu: "250m"
         ports:
         - containerPort: 80
