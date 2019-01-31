@@ -396,7 +396,29 @@ apt-get update && apt-get -y install kubectl
   me@desktop$ mkdir ~/.kube
   me@desktop$ scp pi04:/home/lonelyone/.kube/config $HOME/.kube/
 
-  me@desktop$ get pods --all-namespaces
+  me@desktop$ kubectl get pods --all-namespaces
+  NAMESPACE        NAME                                           READY   STATUS    RESTARTS   AGE
+  default          my-nginx-7fd64b656c-j78sc                      1/1     Running   0          42m
+  default          my-nginx-7fd64b656c-pjjmb                      1/1     Running   0          42m
+  ingress-nginx    nginx-ingress-controller-594f658645-nhxg2      1/1     Running   0          53m
+  kube-system      coredns-86c58d9df4-kjgl7                       1/1     Running   0          6h30m
+  kube-system      coredns-86c58d9df4-znd5j                       1/1     Running   0          6h30m
+  kube-system      etcd-pi04.p13.p.s18m2.com                      1/1     Running   0          6h30m
+  kube-system      kube-apiserver-pi04.p13.p.s18m2.com            1/1     Running   1          6h31m
+  kube-system      kube-controller-manager-pi04.p13.p.s18m2.com   1/1     Running   0          6h30m
+  kube-system      kube-flannel-ds-arm-46bxm                      1/1     Running   1          6h26m
+  kube-system      kube-flannel-ds-arm-lg69b                      1/1     Running   1          6h26m
+  kube-system      kube-flannel-ds-arm-lrj2n                      1/1     Running   0          6h28m
+  kube-system      kube-flannel-ds-arm-wtcxj                      1/1     Running   1          6h27m
+  kube-system      kube-proxy-c5cjn                               1/1     Running   0          6h26m
+  kube-system      kube-proxy-cts58                               1/1     Running   0          6h27m
+  kube-system      kube-proxy-k758k                               1/1     Running   0          6h26m
+  kube-system      kube-proxy-lncbd                               1/1     Running   0          6h30m
+  kube-system      kube-scheduler-pi04.p13.p.s18m2.com            1/1     Running   0          6h31m
+  metallb-system   controller-7cc9c87cfb-b6m55                    1/1     Running   0          74m
+  metallb-system   speaker-2gmfk                                  1/1     Running   0          74m
+  metallb-system   speaker-h67f8                                  1/1     Running   0          74m
+  metallb-system   speaker-wh5ww                                  1/1     Running   0          74m
 ```
 
 
