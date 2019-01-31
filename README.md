@@ -474,11 +474,17 @@ When you create a Service, it creates a corresponding DNS entry. This entry is o
 - prometheus
 
 
+# various tools/links #
+
+- https://github.com/weaveworks/kubediff - tool for Kubernetes to show differences between running state and version controlled configuration
+- https://github.com/weaveworks/grafanalib - Python library for building Grafana dashboards
+
+
 # Kubernetes Best practices #
 
-This sample sandbox violates quite a few production rules ; here is a kubernetes best practice talk presenting a few kubernetes best practices (it starts slowly,but finally get into interesting/useful points) :
+This sample sandbox violates quite a few production rules ; here is a kubernetes best practices talk presenting a few kubernetes best practices (it starts slowly,but finally gets into interesting/useful points) :
 
 - https://www.youtube.com/watch?v=BznjDNxp4Hs ("Kubernetes Best Practices with Sandeep Dinesh (Google)")
-- presentation slides : speakerdeck.com/thesandlord/kubernetes-best-practices
+- presentation slides : https://speakerdeck.com/thesandlord/kubernetes-best-practices
 
 
