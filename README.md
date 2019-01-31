@@ -85,7 +85,7 @@ we'll use /opt/hosting/infra/k8s ; /opt/hosting/infra being already mounted loca
   sed -i 's#KUBELET_EXTRA_ARGS=#KUBELET_EXTRA_ARGS="--root-dir=/opt/hosting/infra/k8s"#g' /etc/default/kubelet
 ```
 
-
+(our docker-engine daemons also uses a separate partition on another device than the internal mmc card).
 
 # master node init #
 
@@ -460,11 +460,26 @@ refs:
 
 # environments #
 
-- 1 kubernetes namespace per environment (dev, staging, production)
+- 1 kubernetes namespace per environment (dev, staging, production) : see https://kubernetes.io/docs/tasks/administer-cluster/namespaces/
 - Role-Based Acces Control --> per users access to namespaces
 - network policies : restrict applications to given networks
+
+# namespaces and dns #
+
+When you create a Service, it creates a corresponding DNS entry. This entry is of the form <service-name>.<namespace-name>.svc.cluster.local, which means that if a container just uses <service-name> it will resolve to the service which is local to a namespace.
+
 
 # monitoring #
 
 - prometheus
+
+
+# Kubernetes Best practices #
+
+This sample sandbox violates quite a few production rules ; here is a kubernetes best practice talk presenting a few kubernetes best practices :
+
+https://www.youtube.com/watch?v=BznjDNxp4Hs ("Kubernetes Best Practices with Sandeep Dinesh (Google)")
+
+
+- 
 

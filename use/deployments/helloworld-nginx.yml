@@ -14,6 +14,7 @@ spec:
     spec:
       containers:
       - name: my-nginx
+        # do NOT DO this ; use specific tag (as in 'version') instead:
         image: nginx:stable
         resources:
           requests:
