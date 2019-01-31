@@ -109,8 +109,6 @@ or better : use this script in the first place to kubeadm init the cluster :
 
 
 ```
-
-```
 #!/usr/bin/env python
 #
 # replace some startup timeouts when manifests files are created by kubeadm init
