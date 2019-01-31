@@ -462,13 +462,13 @@ refs:
 
 # environments #
 
-- 1 kubernetes namespace per environment (dev, staging, production) : see https://kubernetes.io/docs/tasks/administer-cluster/namespaces/
+- 1 kubernetes namespace per environment+project (dev, staging, production) : see https://kubernetes.io/docs/tasks/administer-cluster/namespaces/
 - Role-Based Acces Control --> per users access to namespaces
 - network policies : restrict applications to given networks
 
 # namespaces and dns #
 
-When you create a Service, it creates a corresponding DNS entry. This entry is of the form ```<service-name>.<namespace-name>.svc.cluster.local```, which means that if a container just uses ```<service-name>``` it will resolve to the service which is local to a namespace.
+When you create a Service, it creates a corresponding DNS entry. This entry is of the form ```<service-name>.<namespace-name>.svc.cluster.local``` ("cluster.local" beeing the default cluster name created by kubeadm init), which means that if a container just uses ```<service-name>``` it will resolve to the service which is local to a namespace.
 
 
 # monitoring #
