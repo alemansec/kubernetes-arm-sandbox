@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>MetalLB, bare metal load-balancer for Kubernetes</title>
+    
+      <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="generator" content="Hugo 0.32.1">
+
+<title>Layer 2 mode tutorial :: MetalLB, bare metal load-balancer for Kubernetes</title>
+<link rel="shortcut icon" href="https://metallb.universe.tf/images/favicon.png" type="image/x-icon">
+<link href="MetalLB,%20bare%20metal%20load-balancer%20for%20Kubernetes_files/nucleus.css" rel="stylesheet">
+<link href="MetalLB,%20bare%20metal%20load-balancer%20for%20Kubernetes_files/font-awesome.css" rel="stylesheet">
+<link href="MetalLB,%20bare%20metal%20load-balancer%20for%20Kubernetes_files/hybrid.css" rel="stylesheet">
+<link href="MetalLB,%20bare%20metal%20load-balancer%20for%20Kubernetes_files/featherlight.css" rel="stylesheet">
+<link href="MetalLB,%20bare%20metal%20load-balancer%20for%20Kubernetes_files/auto-complete.css" rel="stylesheet">
+<link href="MetalLB,%20bare%20metal%20load-balancer%20for%20Kubernetes_files/style.css" rel="stylesheet">
+
+<link rel="stylesheet" href="MetalLB,%20bare%20metal%20load-balancer%20for%20Kubernetes_files/bootstrap.css">
+<script src="MetalLB,%20bare%20metal%20load-balancer%20for%20Kubernetes_files/jquery-2.js"></script>
+<style type="text/css">
+  :root #header + #content > #left > #rlblock_left {
+    display:none !important;
+  }
+</style>
+<style type="text/css">
+  :not(pre) > code + span.copy-to-clipboard {
+    display: none;
+  }
+</style>
+
+    
+  </head>
+  <body data-url="/tutorial/layer2/">
+    
+      <div id="headermain"></div>
+<nav id="sidebar" class="">
+
+
+
+<div class="highlightable">
+  <div id="header-wrapper">
+    <div id="header">
+      
+	
+  
+    <p><img src="MetalLB,%20bare%20metal%20load-balancer%20for%20Kubernetes_files/logo.png" width="25%" align="left">
+MetalLB v0.7.3
+</p><p style="clear: both"></p><p></p>
+
+  
+
+    </div>
+        <div class="searchbox">
+		    <label for="search-by"><i class="fa fa-search"></i></label>
+		    <input data-search-input="" id="search-by" placeholder="Search..." type="text">
+		    <span data-search-clear=""><i class="fa fa-close"></i></span>
+		</div>
+		<script type="text/javascript" src="MetalLB,%20bare%20metal%20load-balancer%20for%20Kubernetes_files/lunr.js"></script>
+		<script type="text/javascript" src="MetalLB,%20bare%20metal%20load-balancer%20for%20Kubernetes_files/auto-complete.js"></script>
+		<script type="text/javascript">
+        
+            var baseurl = "\/";
+        
+		</script>
+		<script type="text/javascript" src="MetalLB,%20bare%20metal%20load-balancer%20for%20Kubernetes_files/search.js"></script>
+  </div>
+
+      <ul class="topics">
+            <li data-nav-id="/" class="dd-item">
+            <a href="https://metallb.universe.tf/"><i class="fa fa-fw fa-home"></i></a>
+            </li>
+    <li data-nav-id="/concepts/" class="dd-item">
+      <a href="https://metallb.universe.tf/concepts/">
+        <span>Concepts</span><i class="fa fa-angle-right fa-lg category-icon"></i>
+      </a>
+        <ul>
+      <li data-nav-id="/concepts/layer2/" class="dd-item">
+        <a href="https://metallb.universe.tf/concepts/layer2/">
+          <span>MetalLB in layer 2 mode</span>
+        </a>
+    </li>
+      <li data-nav-id="/concepts/bgp/" class="dd-item">
+        <a href="https://metallb.universe.tf/concepts/bgp/">
+          <span>MetalLB in BGP mode</span>
+        </a>
+    </li>
+      <li data-nav-id="/concepts/maturity/" class="dd-item">
+        <a href="https://metallb.universe.tf/concepts/maturity/">
+          <span>Project Maturity</span>
+        </a>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/tutorial/" class="dd-item parent">
+      <a href="https://metallb.universe.tf/tutorial/">
+        <span>Tutorial</span>
+            <i class="fa fa-angle-down fa-lg category-icon"></i>
+      </a>
+        <ul>
+      <li data-nav-id="/tutorial/minikube/" class="dd-item">
+        <a href="https://metallb.universe.tf/tutorial/minikube/">
+          <span>BGP on Minikube</span>
+        </a>
+    </li>
+      <li data-nav-id="/tutorial/layer2/" class="dd-item active">
+        <a href="https://metallb.universe.tf/tutorial/layer2/">
+          <span>Layer 2 mode tutorial</span>
+        </a>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/installation/" class="dd-item">
+      <a href="https://metallb.universe.tf/installation/">
+        <span>Installation</span><i class="fa fa-angle-right fa-lg category-icon"></i>
+      </a>
+        <ul>
+      <li data-nav-id="/installation/network-addons/" class="dd-item">
+        <a href="https://metallb.universe.tf/installation/network-addons/">
+          <span>Network Addon Compatibility</span>
+        </a>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/configuration/" class="dd-item">
+      <a href="https://metallb.universe.tf/configuration/">
+        <span>Configuration</span><i class="fa fa-angle-right fa-lg category-icon"></i>
+      </a>
+        <ul>
+      <li data-nav-id="/configuration/romana/" class="dd-item">
+        <a href="https://metallb.universe.tf/configuration/romana/">
+          <span>Integrating with Romana</span>
+        </a>
+    </li>
+      <li data-nav-id="/configuration/calico/" class="dd-item">
+        <a href="https://metallb.universe.tf/configuration/calico/">
+          <span>Issues with Calico</span>
+        </a>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/usage/" class="dd-item">
+      <a href="https://metallb.universe.tf/usage/">
+        <span>Usage</span><i class="fa fa-angle-right fa-lg category-icon"></i>
+      </a>
+        <ul>
+      <li data-nav-id="/usage/example/" class="dd-item">
+        <a href="https://metallb.universe.tf/usage/example/">
+          <span>Full example</span>
+        </a>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/community/" class="dd-item">
+      <a href="https://metallb.universe.tf/community/">
+        <span>Community &amp; Contributing</span><i class="fa fa-angle-right fa-lg category-icon"></i>
+      </a>
+        <ul>
+      <li data-nav-id="/community/code-of-conduct/" class="dd-item">
+        <a href="https://metallb.universe.tf/community/code-of-conduct/">
+          <span>Code of Conduct</span>
+        </a>
+    </li>
+      <li data-nav-id="/community/release-process/" class="dd-item">
+        <a href="https://metallb.universe.tf/community/release-process/">
+          <span>Release Process</span>
+        </a>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/release-notes/" class="dd-item">
+      <a href="https://metallb.universe.tf/release-notes/">
+        <span>Release Notes</span>
+      </a>
+    </li>
+
+
+
+        <section id="shortcuts">
+                <li class="" role=""><hr><a href="https://github.com/google/metallb" target="_blank" rel="noopener"><i class="fa fa-github"></i> Github repo</a></li>
+                <li class="" role=""><a href="https://groups.google.com/forum/#!forum/metallb-users" target="_blank" rel="noopener"><i class="fa fa-envelope-open-o"></i> Mailing list</a></li>
+                <li class="" role=""><a href="https://kubernetes.slack.com/messages/metallb" target="_blank" rel="noopener"><i class="fa fa-slack"></i> Slack</a></li>
+                <li class="" role=""><a href="https://github.com/google/metallb/blob/master/LICENSE" target="_blank" rel="noopener"><i class="fa fa-copyright"></i> License</a></li>
+        </section>
+
+    <hr>
+    <li></li>
+    
+    </ul>
+
+ <section id="footer">
+    </section>
+  </div>
+</nav>
+
+
+
+<section id="body">
+<div id="overlay"></div>
+<div class="padding highlightable">
+
+  <div id="top-bar">
+    
+      
+      
+      
+    <div id="top-github-link">
+      <a class="github-link" href="https://github.com/google/metallb/edit/master/website/content/tutorial/layer2.md" target="blank">
+        <i class="fa fa-code-fork"></i>
+        Edit page
+      </a>
+    </div><div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+        <span id="sidebar-toggle-span">
+          <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+            <i class="fa fa-bars"></i>
+          </a>
+        </span>
+        <span id="toc-menu"><i class="fa fa-list-alt"></i></span>
+        <span class="links">
+        
+
+
+
+
+
+
+
+ <a href="https://metallb.universe.tf/">MetalLB</a> &gt; <a href="https://metallb.universe.tf/tutorial/">Tutorial</a> &gt; Layer 2 mode tutorial
+
+ 
+
+ 
+
+   
+        </span>
+    </div>
+    
+    
+    <div class="progress">
+        <div class="wrapper">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#cluster-addresses">Cluster addresses</a></li>
+<li><a href="#install-metallb">Install MetalLB</a></li>
+<li><a href="#configure-metallb">Configure MetalLB</a></li>
+<li><a href="#create-a-load-balanced-service">Create a load-balanced service</a></li>
+</ul></li>
+</ul>
+</nav>
+        </div>
+    </div>
+    
+
+  </div>
+
+
+<div id="body-inner">
+  
+    <h1>Layer 2 mode tutorial</h1>
+  
+
+
+
+    
+    
+    
+    
+
+<p>In this tutorial we deploy MetalLB in a cluster and announce a
+load-balanced IP using layer 2 mode. We assume you have a bare metal
+cluster already running, for example
+a
+<a href="https://blog.hypriot.com/post/setup-kubernetes-raspberry-pi-cluster/">Raspberry Pi Kubernetes cluster</a>.</p>
+
+<p>The nice thing about layer 2 mode is that you don’t need any fancy
+network hardware at all, it should just work on any ethernet network.</p>
+
+<p>Here is the outline of what we’re going to do:</p>
+
+<ol>
+<li>Install MetalLB on the cluster,</li>
+<li>Configure MetalLB to announce using layer 2 mode and give it some
+IP addresses to manage,</li>
+<li>Create a load-balanced service, and observe how MetalLB sets it up.</li>
+</ol>
+
+<h2 id="cluster-addresses">Cluster addresses</h2>
+
+<p>For this tutorial, we’ll assume the cluster is set up on a network
+using <code>192.168.1.0/24</code>. The main router is configured to hand out DHCP
+address in the <code>192.168.1.100—192.168.1.150</code> range.</p>
+
+<p>We need to allocate another chunk of this IP space for MetalLB
+services. We’ll use <code>192.168.1.240-192.168.1.250</code> for this.</p>
+
+<p>If your cluster is not using the same addresses, you’ll need to
+substitute the appropriate address ranges in the rest of this
+tutorial. We’ll point out the places where you need to make edits.</p>
+
+<h2 id="install-metallb">Install MetalLB</h2>
+
+<p>MetalLB runs in two parts: a cluster-wide controller, and a
+per-machine protocol speaker.</p>
+
+<p>Install MetalLB by applying the manifest:</p>
+
+<p><code>kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.7.3/manifests/metallb.yaml</code></p>
+
+<p>This manifest creates a bunch of resources. Most of them are related
+to access control, so that MetalLB can read and write the Kubernetes
+objects it needs to do its job.</p>
+
+<p>Ignore those bits for now, the two pieces of interest are the
+“controller” deployment, and the “speaker” DaemonSet. Wait for these
+to start by monitoring <code>kubectl get pods -n metallb-system</code>.
+Eventually, you should see some running pods.</p>
+
+<pre><code>controller-74d6b85f86-xw5mx   1/1       Running   0          32m
+speaker-kr2ks                 1/1       Running   0          31m
+speaker-skfrp                 1/1       Running   0          31m
+speaker-zmtb4                 1/1       Running   0          32m
+</code></pre>
+
+<p>You should see one controller pod, and one speaker pod for each node
+in your cluster.</p>
+
+<div class="notices note"><p>Your pods will have a slightly different names, because the suffix is
+randomly generated.</p>
+</div>
+
+
+<p>Nothing has been announced yet, because we didn’t supply a ConfigMap, nor a service with
+a load-balanced address.</p>
+
+<h2 id="configure-metallb">Configure MetalLB</h2>
+
+<p>We have a sample MetalLB configuration in
+<a href="https://raw.githubusercontent.com/google/metallb/v0.7.3/manifests/example-layer2-config.yaml"><code>manifests/example-layer2-config.yaml</code></a>.
+Let’s take a look at it before applying it:</p>
+
+<pre><code class="language-yaml">apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: metallb-system
+  name: config
+data:
+  config: |
+    address-pools:
+    - name: my-ip-space
+      protocol: layer2
+      addresses:
+      - 192.168.1.240-192.168.1.250
+</code></pre>
+
+<div class="notices note"><p>If you used different IP addresses in your cluster, change the IP
+range in this configuration before applying it.</p>
+</div>
+
+
+<p>MetalLB’s configuration is a standard Kubernetes ConfigMap, <code>config</code>
+under the <code>metallb-system</code> namespace. It contains two pieces of
+information: what IP addresses it’s allowed to hand out and which
+protocol to do that with.</p>
+
+<p>In this configuration we tell MetalLB to hand out address from the
+<code>192.168.1.240-192.168.1.250</code> range, using layer 2 mode (<code>protocol:
+layer2</code>). Apply this configuration:</p>
+
+<p><code>kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.7.3/manifests/example-layer2-config.yaml</code></p>
+
+<p>The configuration should take effect within a few seconds. By
+following the logs we can see what’s going on: <code>kubectl logs -l
+component=speaker -n metallb-system</code>:</p>
+
+<pre><code>I1217 10:18:05.212018       1 leaderelection.go:174] attempting to acquire leader lease...
+I1217 10:18:07.312902       1 bgp_controller.go:176] Start config update
+I1217 10:18:07.403537       1 bgp_controller.go:243] End config update
+I1217 10:18:07.403748       1 arp_controller.go:128] Start config update
+I1217 10:18:07.403883       1 arp_controller.go:143] End config update
+</code></pre>
+
+<p>The speaker has loaded the configuration, but hasn’t done anything
+else yet, because there are no LoadBalancer services in the cluster.</p>
+
+<h2 id="create-a-load-balanced-service">Create a load-balanced service</h2>
+
+<p><a href="https://raw.githubusercontent.com/google/metallb/v0.7.3/manifests/tutorial-2.yaml"><code>manifests/tutorial-2.yaml</code></a> contains
+a trivial service: an nginx pod, and a load-balancer service pointing
+at nginx. Deploy it to the cluster:</p>
+
+<p><code>kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.7.3/manifests/tutorial-2.yaml</code></p>
+
+<p>Wait for nginx to start by monitoring <code>kubectl get pods</code>, until you
+see a running nginx pod. It should look something like this:</p>
+
+<pre><code>NAME                         READY     STATUS    RESTARTS   AGE
+nginx-558d677d68-j9x9x       1/1       Running   0          47s
+</code></pre>
+
+<p>Once it’s running, take a look at the <code>nginx</code> service with <code>kubectl
+get service nginx</code>:</p>
+
+<pre><code>NAME      TYPE           CLUSTER-IP      EXTERNAL-IP     PORT(S)        AGE
+nginx     LoadBalancer   10.102.30.250   192.168.1.240   80:31517/TCP   1d
+</code></pre>
+
+<p>We have an external IP! Looking through the logs of <code>speaker</code> we see it happening:</p>
+
+<pre><code>I1217 10:18:07.409788       1 arp_controller.go:53] default/nginx: start update
+I1217 10:18:07.409867       1 arp_controller.go:96] default/nginx: announcable, making advertisement
+I1217 10:18:07.409977       1 arp_controller.go:107] default/nginx: end update
+...
+I1217 10:19:01.905426       1 leader.go:61] Sending unsolicited ARPs for 1 addresses
+I1217 10:19:05.005671       1 arp.go:96] Request: who-has 192.168.1.240?  tell 192.168.1.1 (b4:75:0e:63:b2:20). reply: 192.168.1.240 is-at b8:27:eb:86:e2:85
+I1217 10:19:05.105780       1 arp.go:96] Request: who-has 192.168.1.240?  tell 192.168.1.1 (b4:75:0e:63:b2:20). reply: 192.168.1.240 is-at b8:27:eb:86:e2:85
+I1217 10:19:05.235623       1 arp.go:96] Request: who-has 192.168.1.240?  tell 192.168.1.1 (b4:75:0e:63:b2:20). reply: 192.168.1.240 is-at b8:27:eb:86:e2:85
+</code></pre>
+
+<p>MetalLB is sending out replies to ARP requests with the MAC address of
+the node that has won the leader election. It is using the first
+address of the assigned range (192.168.1.240).</p>
+
+<p>When you <code>curl http://192.168.1.240</code> you should see the default nginx
+page: “Welcome to nginx!”</p>
+
+
+    
+    
+          <footer class=" footline">
+	
+</footer>
+  </div>
+</div>
+
+<div id="navigation">
+</div>
+
+</section>
+<div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+  <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+</div>    
+
+<script src="MetalLB,%20bare%20metal%20load-balancer%20for%20Kubernetes_files/clipboard.js"></script>
+<script src="MetalLB,%20bare%20metal%20load-balancer%20for%20Kubernetes_files/featherlight.js"></script>
+<script src="MetalLB,%20bare%20metal%20load-balancer%20for%20Kubernetes_files/html5shiv-printshiv.js"></script>
+<script src="MetalLB,%20bare%20metal%20load-balancer%20for%20Kubernetes_files/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="MetalLB,%20bare%20metal%20load-balancer%20for%20Kubernetes_files/modernizr.js"></script>
+<script src="MetalLB,%20bare%20metal%20load-balancer%20for%20Kubernetes_files/docdock.js"></script>
+<script src="MetalLB,%20bare%20metal%20load-balancer%20for%20Kubernetes_files/script.js"></script>
+
+
+    
+
+    
+    
+
+    
+  
+</body></html>

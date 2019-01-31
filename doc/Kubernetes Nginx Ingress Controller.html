@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Kubernetes Nginx Ingress Controller</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- stylesheets -->
+		<link rel="stylesheet" href="Kubernetes%20Nginx%20Ingress%20Controller_files/css.css">
+		<link rel="stylesheet" href="Kubernetes%20Nginx%20Ingress%20Controller_files/bootstrap.css">
+		<link rel="stylesheet" href="Kubernetes%20Nginx%20Ingress%20Controller_files/font-awesome.css">
+        <link rel="stylesheet" href="Kubernetes%20Nginx%20Ingress%20Controller_files/tomorrow-night.css">
+		<link rel="stylesheet" type="text/css" href="Kubernetes%20Nginx%20Ingress%20Controller_files/style.css">
+		<script>
+var disqus_shortname = 'akomljen';
+var fixed_navbar = true;
+</script>
+		<meta name="description" content="Instructions on how to setup the Kubernetes Nginx Ingress controller running on Vagrant or any other non-cloud based solution, like bare metal deployments.">
+    <link rel="shortcut icon" href="https://akomljen.com/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="http://akomljen.com/kubernetes-nginx-ingress-controller/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+    <meta property="og:site_name" content="Alen Komljen">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Kubernetes Nginx Ingress Controller">
+    <meta property="og:description" content="Instructions on how to setup the Kubernetes Nginx Ingress controller running on Vagrant or any other non-cloud based solution, like bare metal deployments.">
+    <meta property="og:url" content="http://akomljen.com/kubernetes-nginx-ingress-controller/">
+    <meta property="og:image" content="http://akomljen.com/content/images/2018/01/texture-2945315_1920.jpg">
+    <meta property="article:published_time" content="2018-01-16T19:00:00.000Z">
+    <meta property="article:modified_time" content="2019-01-17T08:38:15.000Z">
+    <meta property="article:tag" content="kubernetes">
+    <meta property="article:tag" content="nginx">
+    <meta property="article:tag" content="ingress">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Kubernetes Nginx Ingress Controller">
+    <meta name="twitter:description" content="Instructions on how to setup the Kubernetes Nginx Ingress controller running on Vagrant or any other non-cloud based solution, like bare metal deployments.">
+    <meta name="twitter:url" content="http://akomljen.com/kubernetes-nginx-ingress-controller/">
+    <meta name="twitter:image" content="http://akomljen.com/content/images/2018/01/texture-2945315_1920.jpg">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Alen Komljen">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="kubernetes, nginx, ingress">
+    <meta name="twitter:site" content="@alenkomljen">
+    <meta name="twitter:creator" content="@alenkomljen">
+    <meta property="og:image:width" content="1920">
+    <meta property="og:image:height" content="1450">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Alen Komljen",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "http://akomljen.com/favicon.ico",
+            "width": 60,
+            "height": 60
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Alen Komljen",
+        "image": {
+            "@type": "ImageObject",
+            "url": "http://akomljen.com/content/images/2019/01/25590562988_92ca1fe0df_o.JPG",
+            "width": 1923,
+            "height": 1923
+        },
+        "url": "https://akomljen.com/author/alen/",
+        "sameAs": [
+            "https://twitter.com/alenkomljen"
+        ]
+    },
+    "headline": "Kubernetes Nginx Ingress Controller",
+    "url": "https://akomljen.com/kubernetes-nginx-ingress-controller/",
+    "datePublished": "2018-01-16T19:00:00.000Z",
+    "dateModified": "2019-01-17T08:38:15.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "http://akomljen.com/content/images/2018/01/texture-2945315_1920.jpg",
+        "width": 1920,
+        "height": 1450
+    },
+    "keywords": "kubernetes, nginx, ingress",
+    "description": "Instructions on how to setup the Kubernetes Nginx Ingress controller running on Vagrant or any other non-cloud based solution, like bare metal deployments.",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "http://akomljen.com/"
+    }
+}
+    </script>
+
+    <script src="Kubernetes%20Nginx%20Ingress%20Controller_files/ghost-sdk.js"></script>
+<script>
+ghost.init({
+	clientId: "ghost-frontend",
+	clientSecret: "54dcb87187d8"
+});
+</script>
+    <meta name="generator" content="Ghost 2.9">
+    <link rel="alternate" type="application/rss+xml" title="Alen Komljen" href="https://akomljen.com/rss/">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async="" src="Kubernetes%20Nginx%20Ingress%20Controller_files/js.js"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-105595969-1');
+</script>
+	</head>
+	<body class="post-template tag-kubernetes tag-nginx tag-ingress">
+		<!-- start header -->
+<header class="site-header" id="main-navbar">
+	<div class="container">
+		<div class="row">
+			<nav class="main-menu hidden-sm hidden-xs" id="main-menu">
+	<ul>
+		<li class="home"><a href="https://akomljen.com/">Home</a></li>
+		<li class="about"><a href="https://akomljen.com/about/">About</a></li>
+		<li class="contact"><a href="https://akomljen.com/contact/">Contact</a></li>
+		<li class="sponsor"><a href="https://akomljen.com/sponsorship/">Sponsor</a></li>
+	</ul>
+</nav>
+            <div class="social-links-wrap"><ul class="social-links">
+    <li><a href="https://twitter.com/alenkomljen"><i class="fa fa-twitter"></i></a></li>
+    <li><a href="https://www.linkedin.com/in/alenkomljen"><i class="fa fa-linkedin"></i></a></li>
+    <li><a href="https://github.com/komljen"><i class="fa fa-github"></i></a></li>
+    <li><a href="https://akomljen.com/rss/"><i class="fa fa-rss"></i></a></li>
+</ul></div>
+			<div class="nav-left pull-left align-left">
+				<span class="mobile-menu-toggle hidden-md hidden-lg" id="nav-toggle-button"><i class="fa fa-bars align-center"></i></span>
+			</div>
+			<nav class="mobile-menu visible-sm visible-xs" id="mobile-menu"></nav>
+			<div class="backdrop hidden-md hidden-lg" id="backdrop">
+				<span class="menu-close align-center"><i class="fa fa-arrow-left"></i></span>
+			</div>
+		</div>
+	</div>
+</header>
+<!-- end header -->		
+<!-- start content area -->
+	<div class="main-content-area single-post">
+		<article>
+			<div class="post-head" style="background-image:url(/content/images/size/w2000h600/2018/01/texture-2945315_1920.jpg);">
+				<div class="container align-center">
+					<div class="row">
+						<div class="col-md-offset-1 col-md-10">
+							<span class="category">
+								<a href="https://akomljen.com/tag/kubernetes/">kubernetes</a>, <a href="https://akomljen.com/tag/nginx/">nginx</a>, <a href="https://akomljen.com/tag/ingress/">ingress</a>
+							</span>
+							<h1 class="title">Kubernetes Nginx Ingress Controller</h1>
+							<div class="post-meta">
+								<a class="author" href="https://akomljen.com/author/alen/" rel="author">
+									<span class="name">Alen Komljen</span>
+								</a>
+								<time class="time" datetime="2018-01-16 20:01:00" itemprop="datePublished">January 16, 2018</time>
+								<readtime>5 min read</readtime>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="container">
+				<div class="site-content">
+					<div class="content-box-wrap">
+						<div class="subscribe">
+	<h5>Recommended book: <a href="https://amzn.to/2RxXK61">Black Box Thinking: Why Most People Never Learn from Their Mistakes - But Some Do</a></h5>
+</div>
+					</div>
+					<div class="post-content">
+						<div class="share-wrap-before clearfix align-center">
+    <ul class="share-links">
+        <li>
+            <a class="fa fa-twitter" href="https://twitter.com/share?text=Kubernetes%20Nginx%20Ingress%20Controller&amp;via=alenkomljen&amp;url=https://akomljen.com/kubernetes-nginx-ingress-controller/" onclick="window.open(this.href, 'twitter-share', 'width=580,height=296');return false;"></a>
+        </li>
+        <li>
+            <a class="fa fa-reddit-alien" href="https://reddit.com/submit?url=https://akomljen.com/kubernetes-nginx-ingress-controller/" onclick="window.open(this.href, 'reddit-share', 'width=580,height=296');return false;"></a>
+        </li>
+        <li>
+            <a class="fa fa-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://akomljen.com/kubernetes-nginx-ingress-controller/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;"></a>
+        </li>
+        <li>
+            <a class="fa fa-linkedin" href="http://www.linkedin.com/shareArticle?mini=true&amp;url=https://akomljen.com/kubernetes-nginx-ingress-controller/&amp;title=Kubernetes%20Nginx%20Ingress%20Controller" onclick="window.open(this.href, 'linkedin-share', 'width=580,height=296');return false;"></a>
+        </li>
+    </ul>
+</div>						<p><b>Last update: </b><time datetime="2018-01-16 20:01:00">January 17, 2019</time></p>
+						<p>Ingress is the built‑in <a href="https://akomljen.com/tag/kubernetes/">Kubernetes</a>
+ load‑balancing framework for HTTP traffic. With Ingress, you control 
+the routing of external traffic. When running on public clouds like AWS 
+or GKE, the load-balancing feature is available out of the box. You 
+don't need to define Ingress rules. In this post, I will focus on 
+creating Kubernetes Nginx Ingress controller running on Vagrant or any 
+other non-cloud based solution, like bare metal deployments. I deployed 
+my test cluster on Vagrant, with <code>kubeadm</code>.</p>
+<h2 id="createasampleappdeployment">Create a Sample App Deployment</h2>
+<p>For this lab, let's create two simple web apps based on <code>dockersamples/static-site</code>
+ docker image. Those are Nginx containers that display application name 
+which will help us to identify which app we are accessing. The result, 
+both apps accessible through load balancer:</p>
+<p><img src="Kubernetes%20Nginx%20Ingress%20Controller_files/Screenshot-2018-01-16-21.png" alt="Screenshot-2018-01-16-21.27.32"></p>
+<p>Here is the app deployment resource, the two same web apps with a different name and two replicas for each:</p>
+<pre><code>⚡ cat &gt; app-deployment.yaml &lt;&lt;EOF
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: app1
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: app1
+    spec:
+      containers:
+      - name: app1
+        image: dockersamples/static-site
+        env:
+        - name: AUTHOR
+          value: app1
+        ports:
+        - containerPort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: app2
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: app2
+    spec:
+      containers:
+      - name: app2
+        image: dockersamples/static-site
+        env:
+        - name: AUTHOR
+          value: app2
+        ports:
+        - containerPort: 80
+EOF
+</code></pre>
+<p>And same for services:</p>
+<pre><code>⚡ cat &gt; app-service.yaml &lt;&lt;EOF
+apiVersion: v1
+kind: Service
+metadata:
+  name: appsvc1
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: app1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appsvc2
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: app2
+EOF
+</code></pre>
+<p>Next, we'll create above resources:</p>
+<pre><code>⚡ kubectl create -f app-deployment.yaml -f app-service.yaml
+</code></pre>
+<h2 id="createnginxingresscontroller">Create Nginx Ingress Controller</h2>
+<p><em>If you prefer <a href="https://akomljen.com/package-kubernetes-applications-with-helm/">Helm</a>,
+ installation of the Nginx Ingress controller is easier. This article is
+ the hard way, but you will understand the process better.</em></p>
+<p>All resources for Nginx Ingress controller will be in a separate namespace, so let's create it:</p>
+<pre><code>⚡ kubectl create namespace ingress
+</code></pre>
+<p>The first step is to create a default backend endpoint. Default 
+endpoint redirects all requests which are not defined by Ingress rules:</p>
+<pre><code>⚡ cat &gt; default-backend-deployment.yaml &lt;&lt;EOF
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: default-backend
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: default-backend
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: default-backend
+        image: gcr.io/google_containers/defaultbackend:1.0
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: 10m
+            memory: 20Mi
+          requests:
+            cpu: 10m
+            memory: 20Mi
+EOF
+</code></pre>
+<p>And to create a default backend service:</p>
+<pre><code>⚡ cat &gt; default-backend-service.yaml &lt;&lt;EOF
+apiVersion: v1
+kind: Service
+metadata:
+  name: default-backend
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: default-backend
+EOF
+</code></pre>
+<p>We will create those resources in ingress namespace:</p>
+<pre><code>⚡ kubectl create -f default-backend-deployment.yaml -f default-backend-service.yaml -n=ingress
+</code></pre>
+<p>Then, we need to create a Nginx config to show a VTS page on our load balancer:</p>
+<pre><code>⚡ cat &gt; nginx-ingress-controller-config-map.yaml &lt;&lt;EOF
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-ingress-controller-conf
+  labels:
+    app: nginx-ingress-lb
+data:
+  enable-vts-status: 'true'
+EOF
+
+⚡ kubectl create -f nginx-ingress-controller-config-map.yaml -n=ingress
+</code></pre>
+<p>And here is the actual Nginx Ingress controller deployment:</p>
+<pre><code>⚡ cat &gt; nginx-ingress-controller-deployment.yaml &lt;&lt;EOF
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-ingress-controller
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  template:
+    metadata:
+      labels:
+        app: nginx-ingress-lb
+    spec:
+      terminationGracePeriodSeconds: 60
+      serviceAccount: nginx
+      containers:
+        - name: nginx-ingress-controller
+          image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.9.0
+          imagePullPolicy: Always
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 10254
+              scheme: HTTP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 10254
+              scheme: HTTP
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          args:
+            - /nginx-ingress-controller
+            - --default-backend-service=\$(POD_NAMESPACE)/default-backend
+            - --configmap=\$(POD_NAMESPACE)/nginx-ingress-controller-conf
+            - --v=2
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          ports:
+            - containerPort: 80
+            - containerPort: 18080
+EOF
+</code></pre>
+<p>Notice the <code>\--v=2</code> argument, which is a log level and it shows the Nginx config diff on start. Don't create Nginx controller yet.</p>
+<h2 id="kubernetesandrbac">Kubernetes and RBAC</h2>
+<p>Before we create Ingress controller and move forward you might need to create RBAC rules. Clusters deployed with <code>kubeadm</code> have RBAC enabled by default:</p>
+<pre><code>⚡ cat &gt; nginx-ingress-controller-roles.yaml &lt;&lt;EOF
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: nginx-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - endpoints
+  - nodes
+  - pods
+  - secrets
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - extensions
+  resources:
+  - ingresses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+- apiGroups:
+  - extensions
+  resources:
+  - ingresses/status
+  verbs:
+  - update
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: nginx-role
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nginx-role
+subjects:
+- kind: ServiceAccount
+  name: nginx
+  namespace: ingress
+EOF
+
+⚡ kubectl create -f nginx-ingress-controller-roles.yaml -n=ingress
+</code></pre>
+<p>So now you can create Ingress controller also:</p>
+<pre><code>⚡ kubectl create -f nginx-ingress-controller-deployment.yaml -n=ingress
+</code></pre>
+<p>If you check your pods, you should get something like this:</p>
+<p><img src="Kubernetes%20Nginx%20Ingress%20Controller_files/Screenshot-2017-05-19-23.png" alt="Screenshot-2017-05-19-23.43.08"></p>
+<h2 id="createingressrulesforapplications">Create Ingress Rules for Applications</h2>
+<p>Everything is ready now. The last step is to define Ingress rules for load balancer status page:</p>
+<pre><code>⚡ cat &gt; nginx-ingress.yaml &lt;&lt;EOF
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+spec:
+  rules:
+  - host: test.akomljen.com
+    http:
+      paths:
+      - backend:
+          serviceName: nginx-ingress
+          servicePort: 18080
+        path: /nginx_status
+EOF
+</code></pre>
+<p>And Ingress rules for sample web apps:</p>
+<pre><code>⚡ cat &gt; app-ingress.yaml &lt;&lt;EOF
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: app-ingress
+spec:
+  rules:
+  - host: test.akomljen.com
+    http:
+      paths:
+      - backend:
+          serviceName: appsvc1
+          servicePort: 80
+        path: /app1
+      - backend:
+          serviceName: appsvc2
+          servicePort: 80
+        path: /app2
+EOF
+</code></pre>
+<p>Notice the <code>nginx.ingress.kubernetes.io/rewrite-target: /</code> annotation. We are using <code>/app1</code> and <code>/app2</code> paths, but the apps don’t exist there. This annotation redirects requests to the <code>/</code>. You can create both ingress rules now:</p>
+<pre><code>⚡ kubectl create -f nginx-ingress.yaml -n=ingress
+⚡ kubectl create -f app-ingress.yaml
+</code></pre>
+<h2 id="exposenginxingresscontroller">Expose Nginx Ingress Controller</h2>
+<p>The last step is to expose <code>nginx-ingress-lb</code> deployment for external access. We will expose it with <code>NodePort</code>, but we could also use <code>ExternalIPs</code> here:</p>
+<pre><code>⚡ cat &gt; nginx-ingress-controller-service.yaml &lt;&lt;EOF
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-ingress
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      nodePort: 30000
+      name: http
+    - port: 18080
+      nodePort: 32000
+      name: http-mgmt
+  selector:
+    app: nginx-ingress-lb
+EOF
+
+⚡ kubectl create -f nginx-ingress-controller-service.yaml -n=ingress
+</code></pre>
+<p>If you are running everything on VirtualBox, as I do, forward ports <code>30000</code> and <code>32000</code> from one Kubernetes worker node to <code>localhost</code>:</p>
+<pre><code>⚡ VBoxManage modifyvm "worker_node_vm_name" --natpf1 "nodeport,tcp,127.0.0.1,30000,,30000"
+⚡ VBoxManage modifyvm "worker_node_vm_name" --natpf1 "nodeport2,tcp,127.0.0.1,32000,,32000"
+</code></pre>
+<p>Also add <code>test.akomljen.com</code> domain to hosts file:</p>
+<pre><code>⚡ echo "127.0.0.1 test.akomljen.com" | sudo tee -a /etc/hosts
+</code></pre>
+<p>You can verify everything by accessing at those endpoints:</p>
+<pre><code class="language-bash">http://test.akomljen.com:30000/app1
+http://test.akomljen.com:30000/app2
+http://test.akomljen.com:32000/nginx_status
+</code></pre>
+<p><strong>NOTE</strong>: You can access apps using DNS name only, not IP directly!</p>
+<p>Any other endpoint redirects the request to default backend. Ingress 
+controller is functional now, and you could add more apps to it. For any
+ problems during the setup, please leave a comment. Don’t forget to 
+share this post if you find it useful.</p>
+<h2 id="summary">Summary</h2>
+<p>Having an Ingress is the first step towards the more automation on 
+Kubernetes. Now, you can have automatic SSL with Let's encrypt to 
+increase security also. If you don't want to manage all those 
+configuration files manually, I suggest you look into <a href="https://akomljen.com/package-kubernetes-applications-with-helm/">Helm</a>. Instaling Ingress controller would be only one command. Stay tuned for the next one.</p>
+
+					</div>
+					<div class="content-box-wrap">
+						<div class="subscribe">
+	<h5>Have any questions or comments? <a href="https://mobile.twitter.com/search?q=akomljen.com%2Fkubernetes-nginx-ingress-controller%2F" target="_blank" rel="noopener noreferrer">Discus on Twitter.</a></h5>
+</div>
+					</div>
+					<div class="also-check-posts-box-wrap">
+						<div class="also-check-posts header h3">You may want to read</div>
+<div class="row is-flex-also-check-post">
+    <div class="col-sm-6 col-md-6 col-xs-12">
+        <article class="post post-card">
+            <a href="http://akomljen.com/kubernetes-contour-ingress-controller-for-envoy-proxy/" class="permalink">
+                <div class="featured-image" style="background-image: url(/content/images/size/w400h300/2018/11/pierre-chatel-innocenti-654090-unsplash.jpg)"></div>
+            </a>
+            <div class="content-wrap">
+                <div class="entry-header align-center">
+                    <span class="category"><a href="https://akomljen.com/tag/kubernetes/">kubernetes</a>, <a href="https://akomljen.com/tag/ingress/">ingress</a>, <a href="https://akomljen.com/tag/contour/">contour</a>, <a href="https://akomljen.com/tag/envoy/">envoy</a>, <a href="https://akomljen.com/tag/proxy/">proxy</a></span>
+                    <h3 class="title h4"><a href="http://akomljen.com/kubernetes-contour-ingress-controller-for-envoy-proxy/" rel="bookmark">Kubernetes Contour Ingress Controller for Envoy Proxy</a></h3>
+                </div>
+            </div>
+        </article>
+    </div>
+    <div class="col-sm-6 col-md-6 col-xs-12">
+        <article class="post post-card">
+            <a href="http://akomljen.com/aws-alb-ingress-controller-for-kubernetes/" class="permalink">
+                <div class="featured-image" style="background-image: url(/content/images/size/w400h300/2019/01/mat-reding-695856-unsplash.jpg)"></div>
+            </a>
+            <div class="content-wrap">
+                <div class="entry-header align-center">
+                    <span class="category"><a href="https://akomljen.com/tag/kubernetes/">kubernetes</a>, <a href="https://akomljen.com/tag/aws/">aws</a>, <a href="https://akomljen.com/tag/alb/">alb</a>, <a href="https://akomljen.com/tag/ingress/">ingress</a></span>
+                    <h3 class="title h4"><a href="http://akomljen.com/aws-alb-ingress-controller-for-kubernetes/" rel="bookmark">AWS ALB Ingress Controller for Kubernetes</a></h3>
+                </div>
+            </div>
+        </article>
+    </div>
+</div>
+					</div>
+					<div class="content-box-wrap">
+						<div class="subscribe">
+	<h5>Recommended book: <a href="https://amzn.to/2RxXK61">Black Box Thinking: Why Most People Never Learn from Their Mistakes - But Some Do</a></h5>
+</div>
+					</div>
+				</div>
+				<aside class="sidebar">
+
+	<section class="widget recent-posts">
+		<h2 class="widget-title">Must Read</h2>
+		<ul>
+			<li>
+				<div class="recent-title"><a href="https://akomljen.com/kubernetes-contour-ingress-controller-for-envoy-proxy/">Kubernetes Contour Ingress Controller for Envoy Proxy</a></div>
+				<div class="recent-date">November 08, 2018</div>
+			</li>
+			<li>
+				<div class="recent-title"><a href="https://akomljen.com/get-automatic-https-with-lets-encrypt-and-kubernetes-ingress/">Get Automatic HTTPS with Let's Encrypt and Kubernetes Ingress</a></div>
+				<div class="recent-date">July 08, 2018</div>
+			</li>
+			<li>
+				<div class="recent-title"><a href="https://akomljen.com/get-kubernetes-logs-with-efk-stack-in-5-minutes/">Get Kubernetes Logs with EFK Stack in 5 Minutes</a></div>
+				<div class="recent-date">April 22, 2018</div>
+			</li>
+			<li>
+				<div class="recent-title"><a href="https://akomljen.com/get-kubernetes-cluster-metrics-with-prometheus-in-5-minutes/">Get Kubernetes Cluster Metrics with Prometheus in 5 Minutes</a></div>
+				<div class="recent-date">April 15, 2018</div>
+			</li>
+			<li>
+				<div class="recent-title"><a href="https://akomljen.com/learn-how-to-troubleshoot-applications-running-on-kubernetes/">Learn How to Troubleshoot Applications Running on Kubernetes</a></div>
+				<div class="recent-date">February 06, 2018</div>
+			</li>
+		</ul>
+	</section>
+
+	<section class="widget">
+		<h2 class="widget-title">Join the Newsletter</h2>
+		<p>Subscribe to get my latest content by email.</p>
+		<form method="post" action="/subscribe/" id="" class="sign-up-form">
+    <input class="confirm" name="confirm" type="hidden"><input class="location" name="location" type="hidden"><input class="referrer" name="referrer" type="hidden">
+
+    <div class="form-group">
+        <input class="form-control" name="email" placeholder="Enter your email..." type="email">
+    </div>
+    <button id="" class="btn btn-primary" type="submit"><span>Subscribe</span></button>
+    
+<script>
+    (function(g,h,o,s,t){
+        var buster = function(b,m) {
+            h[o]('input.'+b).forEach(function (i) {
+                i.value=i.value || m;
+            });
+        };
+        buster('location', g.location.href);
+        buster('referrer', h.referrer);
+    })(window,document,'querySelectorAll','value');
+</script>
+
+</form>
+
+
+	</section>
+
+	<section class="widget recent-posts">
+		<h2 class="widget-title">Worth Checking</h2>
+		<ul>
+			<li>
+				<div class="recent-title"><a href="https://akomljen.com/an-easy-way-to-track-new-releases-on-github/">An Easy Way to Track New Releases on GitHub</a></div>
+				<div class="recent-date">January 12, 2019</div>
+			</li>
+			<li>
+				<div class="recent-title"><a href="https://akomljen.com/aws-alb-ingress-controller-for-kubernetes/">AWS ALB Ingress Controller for Kubernetes</a></div>
+				<div class="recent-date">January 06, 2019</div>
+			</li>
+			<li>
+				<div class="recent-title"><a href="https://akomljen.com/10-most-read-kubernetes-articles-on-my-blog/">10 Most Read Kubernetes Articles on My Blog in 2018</a></div>
+				<div class="recent-date">January 01, 2019</div>
+			</li>
+			<li>
+				<div class="recent-title"><a href="https://akomljen.com/kubernetes-api-resources-which-group-and-version-to-use/">Kubernetes API Resources: Which Group and Version to Use?</a></div>
+				<div class="recent-date">November 30, 2018</div>
+			</li>
+			<li>
+				<div class="recent-title"><a href="https://akomljen.com/how-to-run-dev-to-on-kubernetes/">How to Run Dev.to on Kubernetes</a></div>
+				<div class="recent-date">November 25, 2018</div>
+			</li>
+			<li>
+				<div class="recent-title"><a href="https://akomljen.com/kubernetes-contour-ingress-controller-for-envoy-proxy/">Kubernetes Contour Ingress Controller for Envoy Proxy</a></div>
+				<div class="recent-date">November 08, 2018</div>
+			</li>
+			<li>
+				<div class="recent-title"><a href="https://akomljen.com/kubernetes-add-ons-for-more-efficient-computing/">Kubernetes Add-ons for more Efficient Computing</a></div>
+				<div class="recent-date">September 30, 2018</div>
+			</li>
+			<li>
+				<div class="recent-title"><a href="https://akomljen.com/the-importance-of-tech-blogging/">The Importance of Tech Blogging</a></div>
+				<div class="recent-date">July 29, 2018</div>
+			</li>
+			<li>
+				<div class="recent-title"><a href="https://akomljen.com/protect-kubernetes-external-endpoints-with-oauth2-proxy/">Protect Kubernetes External Endpoints with OAuth2 Proxy</a></div>
+				<div class="recent-date">July 17, 2018</div>
+			</li>
+			<li>
+				<div class="recent-title"><a href="https://akomljen.com/get-automatic-https-with-lets-encrypt-and-kubernetes-ingress/">Get Automatic HTTPS with Let's Encrypt and Kubernetes Ingress</a></div>
+				<div class="recent-date">July 08, 2018</div>
+			</li>
+		</ul>
+	</section>
+
+</aside>
+<!-- end sidebar -->			</div>
+		</article>
+</div>
+
+		<!-- start footer -->
+<footer class="site-footer">
+    <div class="footer-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="widget">
+	<h4 class="subscribe-title align-center">Subscribe to get my latest content by email.</h4>
+	<div class="subscribe">
+		<section class="gh-subscribe">
+			<form method="post" action="/subscribe/" id="" class="sign-up-form">
+    <input class="confirm" name="confirm" type="hidden"><input class="location" name="location" type="hidden"><input class="referrer" name="referrer" type="hidden">
+
+    <div class="form-group">
+        <input class="form-control" name="email" placeholder="Enter your email..." type="email">
+    </div>
+    <button id="" class="btn btn-primary" type="submit"><span>Subscribe</span></button>
+    
+<script>
+    (function(g,h,o,s,t){
+        var buster = function(b,m) {
+            h[o]('input.'+b).forEach(function (i) {
+                i.value=i.value || m;
+            });
+        };
+        buster('location', g.location.href);
+        buster('referrer', h.referrer);
+    })(window,document,'querySelectorAll','value');
+</script>
+
+</form>
+
+
+		</section>
+ </div>
+</div>
+<!-- end subscribe widget -->                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+		<div class="container">
+            <div class="footer-bottom-wrap clearfix">
+                <div class="social-links-wrap">
+                    <ul class="social-links">
+    <li><a href="https://twitter.com/alenkomljen"><i class="fa fa-twitter"></i></a></li>
+    <li><a href="https://www.linkedin.com/in/alenkomljen"><i class="fa fa-linkedin"></i></a></li>
+    <li><a href="https://github.com/komljen"><i class="fa fa-github"></i></a></li>
+    <li><a href="https://akomljen.com/rss/"><i class="fa fa-rss"></i></a></li>
+</ul>                </div>
+                <div class="copyright-info">
+                    © 2019 <a href="https://akomljen.com/">Alen Komljen</a>. All right Reserved.
+                    Powered by <a href="https://ghost.org/">Ghost</a>
+                </div>
+            </div>
+		</div>
+	</div>
+</footer>
+<!-- end footer -->
+<span class="back-to-top pull-right" id="back-to-top"><i class="fa fa-angle-up"></i></span>
+<!-- start search modal -->
+<div class="modal" id="searchmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <h4 class="modal-title align-center" id="myModalLabel">Search</h4>
+      </div>
+      <div class="modal-body">
+        <form id="search-form">
+            <div class="input-group url-wrap">
+                
+                <input id="search-input" class="form-control" spellcheck="false" placeholder="Type to Search ..." type="text">
+                <!-- <span class="input-group-addon" id=""><i class="fa fa-search"></i></span> -->
+                <div class="input-group-btn">
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+        </form>
+        <div id="search-results">
+            <ul class=""></ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- end search modal -->
+		<script src="Kubernetes%20Nginx%20Ingress%20Controller_files/jquery.js"></script>
+		<script src="Kubernetes%20Nginx%20Ingress%20Controller_files/bootstrap.js"></script>
+		<script src="Kubernetes%20Nginx%20Ingress%20Controller_files/highlight.js"></script>
+		<script src="Kubernetes%20Nginx%20Ingress%20Controller_files/plugins.js"></script>
+		<script src="Kubernetes%20Nginx%20Ingress%20Controller_files/main.js"></script>
+		<script type="text/javascript" src="Kubernetes%20Nginx%20Ingress%20Controller_files/embed.js" data-dojo-config="usePlainJson: true, isDebug: false"></script><script type="text/javascript">window.dojoRequire(["mojo/signup-forms/Loader"], function(L) { L.start({"baseUrl":"mc.us13.list-manage.com","uuid":"b1236dc8cf7fdaed97e210c7f","lid":"cfabbd70a8","uniqueMethods":true}) })</script>
+	
+
+</body></html>
