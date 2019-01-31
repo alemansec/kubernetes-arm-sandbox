@@ -478,8 +478,7 @@ When you create a Service, it creates a corresponding DNS entry. This entry is o
 
 This sample sandbox violates quite a few production rules ; here is a kubernetes best practice talk presenting a few kubernetes best practices :
 
-https://www.youtube.com/watch?v=BznjDNxp4Hs ("Kubernetes Best Practices with Sandeep Dinesh (Google)")
+- https://www.youtube.com/watch?v=BznjDNxp4Hs ("Kubernetes Best Practices with Sandeep Dinesh (Google)")
+- presentation slides : speakerdeck.com/thesandlord/kubernetes-best-practices
 
-
-- 
 
