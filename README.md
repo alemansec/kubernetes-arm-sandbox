@@ -463,8 +463,8 @@ refs:
 # environments #
 
 - 1 kubernetes namespace per environment+project (dev, staging, production) : see https://kubernetes.io/docs/tasks/administer-cluster/namespaces/
-- Role-Based Acces Control --> per users access to namespaces
-- network policies : restrict applications to given networks
+- Role-Based Acces Control --> per users access to namespaces : see https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+- network policies : restrict applications to given networks ; see https://kubernetes.io/docs/concepts/services-networking/network-policies/
 
 # namespaces and dns #
 
