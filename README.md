@@ -68,6 +68,7 @@ We setup two local nameservers to provide host name resolution for our sandbox z
 
 ```
   curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+  # yes, this shows "xenial" although we're running raspbian on our raspberry pi machines:
   echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
   apt-get update && apt-get -y install kubeadm
 ```
@@ -386,6 +387,7 @@ More options and information about the kubeadm reset command
 
 ```
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+# yes, this line shows "xenial" although we're running debian stretch on our desktop machine :
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
 apt-get update && apt-get -y install kubectl
 ```
