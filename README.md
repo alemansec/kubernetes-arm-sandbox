@@ -262,7 +262,7 @@ my-nginx     LoadBalancer   10.101.142.20   192.168.100.240   80:30020/TCP   16m
 We got an 'EXTERNAL-IP' assigned, in the range configured within metallb config :p
 
 ```
-curl -v http://192.168.100.240/
+me@machine_external_to_cluster$ curl -v http://192.168.100.240/
 *   Trying 192.168.100.240...
 * TCP_NODELAY set
 * Connected to 192.168.100.240 (192.168.100.240) port 80 (#0)
