@@ -210,8 +210,36 @@ Finally, MetalLB controller needs to be installed, so our exposed services (with
   kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.7.3/manifests/metallb.yaml
   # MetalLB’s components will still start, but will remain idle until you define and deploy a configmap :
   kubectl apply -f ./ingress/metallb/layer2-config.yaml
+```
+
+### Optional - requesting specific IPaddr ###
+
+https://metallb.universe.tf/usage/#requesting-specific-ips
+
+"MetalLB respects the spec.loadBalancerIP parameter, so if you want your service to be set up with a specific address, you can request it by setting that parameter."
+
+
+### Optional - requesting a specific address pool ###
+
+MetalLB also supports requesting a specific address pool, if you want a certain kind of address but don’t care which one exactly. To request assignment from a specific pool, add the metallb.universe.tf/address-pool annotation to your service, with the name of the address pool as the annotation value. For example:
 
 ```
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  annotations:
+    metallb.universe.tf/address-pool: production-public-ips
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: nginx
+  type: LoadBalancer
+```
+
+('production-public-ips' pool beeing defined in ingress/metallb/layer2-config.yaml)
 
 ## test service ##
 
