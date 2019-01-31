@@ -466,7 +466,7 @@ refs:
 
 # namespaces and dns #
 
-When you create a Service, it creates a corresponding DNS entry. This entry is of the form <service-name>.<namespace-name>.svc.cluster.local, which means that if a container just uses <service-name> it will resolve to the service which is local to a namespace.
+When you create a Service, it creates a corresponding DNS entry. This entry is of the form ```<service-name>.<namespace-name>.svc.cluster.local```, which means that if a container just uses ```<service-name>``` it will resolve to the service which is local to a namespace.
 
 
 # monitoring #
