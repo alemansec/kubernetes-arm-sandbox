@@ -470,6 +470,8 @@ refs:
 
 When you create a Service, it creates a corresponding DNS entry. This entry is of the form ```<service-name>.<namespace-name>.svc.cluster.local``` ("cluster.local" beeing the default cluster name created by kubeadm init), which means that if a container just uses ```<service-name>``` it will resolve to the service which is local to a namespace.
 
+Containers grouped together in the same pod may use ```localhost``` if tight coupling is needed.
+
 
 # monitoring #
 
@@ -486,7 +488,8 @@ When you create a Service, it creates a corresponding DNS entry. This entry is o
 
 This sample sandbox violates quite a few production rules ; here is a kubernetes best practices talk presenting a few kubernetes best practices (it starts slowly,but finally gets into interesting/useful points) :
 
-- https://www.youtube.com/watch?v=BznjDNxp4Hs ("Kubernetes Best Practices with Sandeep Dinesh (Google)")
-- presentation slides : https://speakerdeck.com/thesandlord/kubernetes-best-practices
+- "Kubernetes Best Practices with Sandeep Dinesh (Google)"
+  - video : https://www.youtube.com/watch?v=BznjDNxp4Hs
+  - presentation slides : https://speakerdeck.com/thesandlord/kubernetes-best-practices
 
 
