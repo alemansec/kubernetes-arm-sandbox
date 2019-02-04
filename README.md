@@ -25,6 +25,7 @@ references :
 - step 3 : setting up custom namespaces, network policies, roles (rbac) and better test service using homemade docker images
 
 - step 4 : migrate our manually-created test service to our local gitlab-ce installation, with gitlab-ci integration.
+  (or better, switch to jenkins-x )
 
 
 # Step 1 #
@@ -40,6 +41,16 @@ In the first iteration/step, we'll use following raspberry pi hosts :
 
 One single kubernetes master node for now.
 
+because i want to bring both ARM and amd64 machines into the mix, i use ansible to provision 4 extra amd64 virtual machines using :
+- https://github.com/alemansec/ansible-role-qemu-host ; to setup and configure qemu on chosen hosts
+- https://github.com/alemansec/ansible-role-qemu-provision-machine ; to provision actual amd64 VM(s).
+
+this adds :
+- vk8s01.p13.p.s18m2.com
+- vk8s02.p13.p.s18m2.com
+- vk8s03.p13.p.s18m2.com
+- vk8s04.p13.p.s18m2.com
+to the mix
 
 ## hosts preparation ##
 
@@ -52,6 +63,31 @@ We setup two local nameservers to provide host name resolution for our sandbox z
 ```
   ansible-playbook -i inventory/bootstrap/ _bootstrap.yml
 ```
+
+### optional - purge previous docker remains ###
+
+```
+docker system prune --volumes
+```
+
+```
+iptables -P INPUT ACCEPT
+iptables -P FORWARD ACCEPT
+iptables -P OUTPUT ACCEPT
+iptables -t nat -F
+iptables -t mangle -F
+iptables -F
+iptables -X
+
+ip6tables -P INPUT ACCEPT
+ip6tables -P FORWARD ACCEPT
+ip6tables -P OUTPUT ACCEPT
+ip6tables -t nat -F
+ip6tables -t mangle -F
+ip6tables -F
+ip6tables -X
+```
+
 
 ### install docker-ce ###
 
@@ -169,7 +205,9 @@ kubeadm join 10.13.1.24:6443 --token ymduph.d5tuo85q088e1k72 --discovery-token-c
 on master node (pi04), as the regular user with .kube/config :
 
 ```
-  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+  #kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+  # sed -i 's/amd64/arm/g' ./kube-flannel.yml
+  kubectl apply -f ./kube-flannel.yml
   kubectl get pods --namespace=kube-system
 ```
 
@@ -177,7 +215,9 @@ on master node (pi04), as the regular user with .kube/config :
 on each node, including master node :
 
 ```
-  sudo sysctl net.bridge.bridge-nf-call-iptables=1
+  #sudo sysctl net.bridge.bridge-nf-call-iptables=1
+  sudo echo "net.bridge.bridge-nf-call-iptables = 1" > /etc/sysctl.d/k8s.conf
+  sudo sysctl -p /etc/sysctl.d/k8s.conf
 ```
 
 as root, on every other node :
@@ -222,7 +262,8 @@ Finally, MetalLB controller needs to be installed, so our exposed services (with
 
 ```
   # https://metallb.universe.tf/installation/
-  kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.7.3/manifests/metallb.yaml
+  #kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.7.3/manifests/metallb.yaml
+  kubectl apply -f ./ingress/metallb/metallb.yaml
   # MetalLB’s components will still start, but will remain idle until you define and deploy a configmap :
   kubectl apply -f ./ingress/metallb/layer2-config.yaml
 ```
@@ -267,7 +308,7 @@ this creates a nginx pod, only accessible from within the cluster.
 (using 'nginx:stable' image, working properly on arm arch)
 
 ```
-  kubectl create -f ./deployments/helloworld-nginx.yml
+  kubectl create -f ./use/deployments/helloworld-nginx.yml
   kubectl get pods -o wide
 ```
 
@@ -284,7 +325,7 @@ either :
 or
 
 ```
-  kubectl create -f services/helloworld-svc-nginx.yml
+  kubectl create -f ./use/services/helloworld-svc-nginx.yml
 ```
 
 ```
@@ -344,8 +385,50 @@ me@machine_external_to_cluster$ curl -v http://192.168.100.240/
 
 @TODO try kubernetes dashboard
 
-ref : https://github.com/kubernetes/dashboard/wiki/Access-control#admin-privileges
+references/doc :
+- https://github.com/kubernetes/dashboard/wiki/Access-control#admin-privileges
+- https://github.com/kubernetes/dashboard/releases
+  - image: k8s.gcr.io/kubernetes-dashboard-arm:v1.10.1
+  - (to edit to switch to arm image i guess : ```kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml```
 
+```
+  kubectl apply -f ./dashboard/kubernetes-dashboard.yaml
+  # then, to access the dashboard :
+  # (for example, i'm executing ```kubectl proxy``` on my desktop machine previously configured to access the cluster using kubectl
+  kubectl proxy
+
+  # create ServiceAccount :
+  kubectl create -f ./dashboard/serviceaccount.yml
+
+  # clusterrole binding:
+  kubectl apply -f ./dashboard/clusterrole_binding.yml
+
+  # retrieve access token using :
+  kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')
+
+  # visit http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
+  # paste the 'token' value of previous command to login
+```
+
+Metrics :
+
+ref: https://github.com/kubernetes/dashboard/wiki/Integrations
+
+- https://github.com/coreos/prometheus-operator (limited)
+- https://github.com/coreos/prometheus-operator/blob/master/contrib/kube-prometheus (complete solution)
+
+
+
+## cert-manager ##
+
+@TODO use this with letsencrypt - similar to traefik's letsencrypt support in terms of features.
+
+- https://docs.cert-manager.io/en/latest/
+- https://github.com/jetstack/cert-manager
+
+--> no official ARM support yet :
+- https://github.com/jetstack/cert-manager/pull/1212 - still open
+- https://github.com/jetstack/cert-manager/issues/608
 
 ## allow pods on master nodes ##
 
@@ -505,5 +588,12 @@ This sample sandbox violates quite a few production rules ; here is a kubernetes
 - "Kubernetes Best Practices with Sandeep Dinesh (Google)"
   - video : https://www.youtube.com/watch?v=BznjDNxp4Hs
   - presentation slides : https://speakerdeck.com/thesandlord/kubernetes-best-practices
+
+
+# Step XX - deploying gitlab-ce inside kubernetes #
+
+see gitlab-deployment-inside-kubernetes/README.md
+
+Right now, this won't work on arm machines, gitlab's helm are amd64 only...
 
 
