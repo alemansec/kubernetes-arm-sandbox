@@ -408,6 +408,8 @@ references/doc :
   # paste the 'token' value of previous command to login
 ```
 
+![dashboard nodes section](dashboard/dashboard-nodes.png?raw=true)
+
 Metrics :
 
 ref: https://github.com/kubernetes/dashboard/wiki/Integrations
