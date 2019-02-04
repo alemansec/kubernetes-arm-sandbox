@@ -383,8 +383,6 @@ me@machine_external_to_cluster$ curl -v http://192.168.100.240/
 
 ## dashboard ##
 
-@TODO try kubernetes dashboard
-
 references/doc :
 - https://github.com/kubernetes/dashboard/wiki/Access-control#admin-privileges
 - https://github.com/kubernetes/dashboard/releases
@@ -421,7 +419,7 @@ ref: https://github.com/kubernetes/dashboard/wiki/Integrations
 
 ## cert-manager ##
 
-@TODO use this with letsencrypt - similar to traefik's letsencrypt support in terms of features.
+@TODO use this with letsencrypt - similar to traefik's letsencrypt support in terms of features (should also be possible to "mix" both letsencrypt and self-signed certs, like traefik does)
 
 - https://docs.cert-manager.io/en/latest/
 - https://github.com/jetstack/cert-manager
@@ -594,6 +592,7 @@ This sample sandbox violates quite a few production rules ; here is a kubernetes
 
 see gitlab-deployment-inside-kubernetes/README.md
 
-Right now, this won't work on arm machines, gitlab's helm are amd64 only...
+Right now, this won't work on arm machines, gitlab's helm are amd64 only, plus .. gitlab is way too resource-hungry for my tiny machines ... will port my gogs docker images instead (postgresql + gogs previously used on swarm)
+
 
 
