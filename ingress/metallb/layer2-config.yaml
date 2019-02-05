@@ -8,5 +8,6 @@ data:
     address-pools:
     - name: my-ip-space
       protocol: layer2
+      #allow-shared-ip: true
       addresses:
       - 192.168.100.80-192.168.100.120

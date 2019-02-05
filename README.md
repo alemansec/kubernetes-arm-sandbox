@@ -238,27 +238,9 @@ We also setup metallb, so we get dynamically allocated 'external' ip addresses f
 https://kubernetes.github.io/ingress-nginx/deploy/
 
 
-### nginx ingress controller ###
-
-Note that we had to use another image, because of our ARM arch, hence the use of ./ingress/nginx/mandatory.yaml
-
-```
-# amd64 only: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/mandatory.yaml
-# arm:
-kubectl apply -f ./ingress/nginx/mandatory.yaml
-# to see progress :
-kubectl describe pods -n ingress-nginx
-```
-
-then
-```
-#kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/provider/baremetal/service-nodeport.yaml
-kubectl apply -f ./ingress/nginx/service-nodeport.yaml
-```
-
 ### MetalLB ###
 
-Finally, MetalLB controller needs to be installed, so our exposed services (with type LoadBalancer) gets external IP addresses:
+MetalLB controller needs to be installed, so our exposed services (with type LoadBalancer) gets external IP addresses:
 
 ```
   # https://metallb.universe.tf/installation/
@@ -296,6 +278,55 @@ spec:
 ```
 
 ('production-public-ips' pool beeing defined in ingress/metallb/layer2-config.yaml)
+
+
+
+### nginx ingress controller ###
+
+https://github.com/nginxinc/kubernetes-ingress/blob/master/docs/installation.md
+
+Note that we had to use another image, because of our ARM arch, hence the use of ./ingress/nginx/mandatory.yaml
+
+```
+# amd64 only: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/mandatory.yaml
+# arm:
+kubectl apply -f ./ingress/nginx/mandatory.yaml
+# to see progress :
+kubectl describe pods -n ingress-nginx
+```
+
+start our nginx ingress controller in loadBalancer mode so it gets an external ip :
+
+```
+  kubectl create -f ingress/nginx/service-loadbalancer.yaml
+```
+
+nginx ingress controller gets assigned an IPaddress provided by METALLB.
+
+Later on, Services (not requiring to use spec.loadBalancer anymore) are automatically made available externally by nginx ingress controller via Kind: Ingress rules.
+
+we can still expose services directly without Ingress rules, by using spec.type: loadBalancer for those services.
+
+Running into this issue : https://github.com/kubernetes/ingress-nginx/issues/3545
+(crashes after 1 or two hits)
+
+```
+I0205 07:58:13.441048       7 controller.go:195] Backend successfully reloaded.
+I0205 07:58:13.451748       7 controller.go:212] Dynamic reconfiguration succeeded.
+192.168.100.4 - [192.168.100.4] - - [05/Feb/2019:07:58:18 +0000] "GET / HTTP/1.1" 302 31 "-" "curl/7.62.0" 83 0.007 [default-gogs-ui-3000] 10.244.3.24:3000 31 0.010 302 8597a5ef8706a4416d94bb36e59f035f
+192.168.100.4 - [192.168.100.4] - - [05/Feb/2019:07:58:19 +0000] "GET / HTTP/1.1" 302 31 "-" "curl/7.62.0" 83 0.015 [default-gogs-ui-3000] 10.244.3.24:3000 31 0.010 302 9fe59e2fc2e523e5fcfaea8326552cac
+panic: runtime error: invalid memory address or nil pointer dereference
+[signal SIGSEGV: segmentation violation code=0x1 addr=0x0 pc=0x11a70]
+
+goroutine 256 [running]:
+runtime/internal/atomic.goXadd64(0x28e44bc, 0x2, 0x0, 0x3126e979, 0x3f7cac08)
+    /usr/local/go/src/runtime/internal/atomic/atomic_arm.go:96 +0x1c
+k8s.io/ingress-nginx/vendor/github.com/prometheus/client_golang/prometheus.(*histogram).Observe(0x28e4460, 0x3126e979, 0x3f7cac08)
+    /go/src/k8s.io/ingress-nginx/vendor/github.com/prometheus/client_golang/prometheus/histogram.go:272 +0x68
+k8s.io/ingress-nginx/internal/ingress/metric/collectors.(*SocketCollector).handleMessage(0x2be1780, 0x2fe8000, 0x14a, 0x600)
+    /go/src/k8s.io/ingress-nginx/internal/ingress/metric/collectors/socket.go:269 +0xb8c
+
+```
 
 
 ### test service ###
@@ -590,11 +621,11 @@ This sample sandbox violates quite a few production rules ; here is a kubernetes
   - presentation slides : https://speakerdeck.com/thesandlord/kubernetes-best-practices
 
 
-# Step XX - deploying gitlab-ce inside kubernetes #
+# Step XX - deploying gogs on kubernetes #
 
-see gitlab-deployment-inside-kubernetes/README.md
 
-Right now, this won't work on arm machines, gitlab's helm are amd64 only, plus .. gitlab is way too resource-hungry for my tiny machines ... will port my gogs docker images instead (postgresql + gogs previously used on swarm)
+see gogs/README.md
 
+WARNING : this is the first attempt, it does not (yet) use secrets, uses an emptyDir storage (meaning you'll lose everything on teardown)..
 
 

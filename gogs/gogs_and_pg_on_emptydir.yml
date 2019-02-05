@@ -1,0 +1,126 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gogs-pg
+  labels:
+    app: gogs-pg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gogs-pg
+  strategy:
+    type: "Recreate"
+  template:
+    metadata:
+      labels:
+        app: gogs-pg
+    spec:
+      containers:
+      - name: postgresql
+        image: postgres:11.1
+        env:
+        - name: POSTGRES_USER
+          value: gogs
+        - name: POSTGRESS_PASSWORD
+          value: gogsdbpwd
+        - name: POSTGRES_DB
+          value: gogs
+        ports:
+        - containerPort: 5432
+          name: postgresql
+        resources:
+          limits:
+            memory: "128Mi"
+          requests:
+            memory: "64Mi"
+        #securityContext:
+        #  # 999 being the 'postgres' user id within postgresql container
+        #  runAsUser: 999
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: data
+        emptyDir: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gogs-ui
+  labels:
+    app: gogs-ui
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gogs-ui
+  template:
+    metadata:
+      labels:
+        app: gogs-ui
+    spec:
+      containers:
+      - name: gogs
+        image: gogs/gogs-rpi
+        ports:
+        - containerPort: 3000
+          name: http
+        resources:
+          limits:
+            memory: "64Mi"
+          requests:
+            memory: "24Mi"
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: data
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gogs-ui
+  labels:
+    app: gogs-ui
+spec:
+  ports:
+  - port: 80
+    targetPort: 3000
+    name: http
+  selector:
+    app: gogs-ui
+  sessionAffinity: "ClientIP"
+  # no need to expose this directly ; our nginx ingress does this now:
+  #type: LoadBalancer
+  #loadBalancerIP: 192.168.100.80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gogs-pg
+  labels:
+    app: gogs-pg
+spec:
+  ports:
+  - port: 5432
+    name: postgresql
+  selector:
+    app: gogs-pg
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gogs-ingress
+#  namespace: default
+spec:
+  rules:
+    - host: gogs.beta.s18m2.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: gogs-ui
+              servicePort: 3000
+

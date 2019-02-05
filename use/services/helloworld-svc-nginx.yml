@@ -11,5 +11,7 @@ spec:
     protocol: TCP
   selector:
     run: my-nginx
-  type: LoadBalancer
+  # not using type: LoadBalancer when using ingress rules :
+  # (service then gets exposed by our nginx ingress controller automatically)
+  #type: LoadBalancer
 

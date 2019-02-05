@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: www-test
+  #namespace: default
+spec:
+  rules:
+    - host: www.beta.s18m2.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: my-nginx
+              servicePort: 80
+
