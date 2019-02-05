@@ -62,6 +62,9 @@ We setup two local nameservers to provide host name resolution for our sandbox z
 
 ```
   ansible-playbook -i inventory/bootstrap/ _bootstrap.yml
+
+  # limit to bind :
+  ansible-playbook -i inventory/bootstrap/ _bootstrap.yml --tags bind
 ```
 
 ### optional - purge previous docker remains ###
@@ -202,7 +205,7 @@ kubeadm join 10.13.1.24:6443 --token ymduph.d5tuo85q088e1k72 --discovery-token-c
 ```
 
 
-on master node (pi04), as the regular user with .kube/config :
+on master node (pi04), as the regular user with .kube/config (or on your desktop machine if you copied .kube/config under ~/.kube/) :
 
 ```
   #kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
@@ -280,6 +283,29 @@ spec:
 ('production-public-ips' pool beeing defined in ingress/metallb/layer2-config.yaml)
 
 
+### traefik ingress controller ###
+
+because ingress-nginx does not work on ARM arch at the moment (see below), i'll switch to traefik.
+
+```
+  # RBAC ClusterRoleBinding:
+  kubectl -f ingress/traefik/traefik-rbac.yaml
+
+  # deployment :
+  kubectl apply -f ingress/traefik/traefik-deployment.yaml
+
+  # http basic auth for traefik dashboard access:
+  # (secret has to be create in same namespace as ingress object)
+  htpasswd -c ./traefik-admin-auth someusername
+  kubectl create secret generic traefik-dashboard-basic-auth --from-file ./traefik-admin-auth --namespace kube-system
+
+  # service and ingress to expose traefik web ui :
+  # openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout traefik.p13.p.s18m2.com.key -out traefik.p13.p.s18m2.com.crt -subj "/CN=traefik.p13.p.s18m2.com"
+  # kubectl -n kube-system create secret tls traefik-ui-tls-cert --key=traefik.p13.p.s18m2.com.key --cert=traefik.p13.p.s18m2.com.crt
+  kubectl -n kube-system create secret tls traefik-ui-tls-cert --key=./certificates/certs/traefik.p13.p.s18m2.com.key --cert=./certificates/certs/traefik.p13.p.s18m2.com.crt
+  kubectl apply -f ingress/traefik/ui.yaml
+
+```
 
 ### nginx ingress controller ###
 
@@ -509,6 +535,9 @@ kubectl drain pi03.p13.p.s18m2.com --delete-local-data --force --ignore-daemonse
 kubectl drain pi04.p13.p.s18m2.com --delete-local-data --force --ignore-daemonsets ; kubectl delete node pi04.p13.p.s18m2.com
 kubectl drain pi01.p13.p.s18m2.com --delete-local-data --force --ignore-daemonsets ; kubectl delete node pi01.p13.p.s18m2.com
 kubectl drain pi02.p13.p.s18m2.com --delete-local-data --force --ignore-daemonsets ; kubectl delete node pi02.p13.p.s18m2.com
+
+# on each node
+kubeadm reset
 iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
 ipvsadm -C
 

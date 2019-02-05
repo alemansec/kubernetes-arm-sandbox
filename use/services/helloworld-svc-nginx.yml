@@ -12,6 +12,6 @@ spec:
   selector:
     run: my-nginx
   # not using type: LoadBalancer when using ingress rules :
-  # (service then gets exposed by our nginx ingress controller automatically)
+  # (service then gets exposed by our traefik ingress controller automatically)
   #type: LoadBalancer
 
