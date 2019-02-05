@@ -367,7 +367,7 @@ or
 ```
 
 
-See if nginx ingress controller and metallb did what they were supposed to :
+See if metallb did what it was supposed to do :
 
 ```
 $ kubectl get svc -o wide
@@ -405,6 +405,7 @@ me@machine_external_to_cluster$ curl -v http://192.168.100.240/
 ...
 ```
 
+(i can't use/validate ingress-nginx right now, because it crashes on arm right now (in its 0.20 version that is, the latest available atm).
 
 
 ## documentations / links ##
