@@ -656,6 +656,7 @@ This sample sandbox violates quite a few production rules ; here is a kubernetes
 
 see gogs/README.md
 
-WARNING : this is the first attempt, it does not (yet) use secrets, uses an emptyDir storage (meaning you'll lose everything on teardown)..
+WARNING : this is the first attempt, it does not (yet) use secrets, uses an emptyDir storage (meaning you'll lose everything on teardown).. but at least it works with separate containers/pods and is quite light as opposed to gitlab-ce.
 
+i'll configure persistent volumes using my local glusterfs installation (also running on Raspberry pi machines)
 
